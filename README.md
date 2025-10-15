@@ -9,3 +9,13 @@ npm install
 ```
 npm run dev
 ```
+**Для входа**
+email: 
+```
+user@example.com
+```
+password: 
+```
+user@example.com
+```
+2FA Code обновляется каждую минуту, сам код для входа отображается в консоли

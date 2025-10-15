@@ -17,5 +17,5 @@ export interface AuthResponse {
 export interface AuthError {
   message: string;
   code?: string;
-  field?: 'email' | 'password' | 'code';
+  field?: "email" | "password" | "code";
 }

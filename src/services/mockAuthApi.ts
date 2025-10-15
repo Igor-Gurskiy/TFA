@@ -1,10 +1,19 @@
-import type { BaseAuth, TwoFAuth, AuthResponse, AuthError } from '../types/auth';
+import type {
+  BaseAuth,
+  TwoFAuth,
+  AuthResponse,
+  AuthError,
+} from "../types/auth";
 
 const mockUsers = [
-  { email: 'user@example.com', password: 'user@example.com', requires2FA: true },
+  {
+    email: "user@example.com",
+    password: "user@example.com",
+    requires2FA: true,
+  },
 ];
 
-let twoFACode: string = '';
+let twoFACode: string = "";
 let codeExpiration: Date | null = null;
 
 const generate2FACode = (): string => {
@@ -17,36 +26,36 @@ const isCodeExpired = (): boolean => {
 
 export const mockAuthApi = {
   login: async (credentials: BaseAuth): Promise<AuthResponse> => {
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    const user = mockUsers.find(u => u.email === credentials.email);
-    
+    const user = mockUsers.find((u) => u.email === credentials.email);
+
     if (!user) {
       throw {
-        message: 'Email not found',
-        code: 'USER_NOT_FOUND',
-        field: 'email'
+        message: "Email not found",
+        code: "USER_NOT_FOUND",
+        field: "email",
       } as AuthError;
     }
 
     if (user.password !== credentials.password) {
       throw {
-        message: 'Invalid password',
-        code: 'INVALID_PASSWORD',
-        field: 'password'
+        message: "Invalid password",
+        code: "INVALID_PASSWORD",
+        field: "password",
       } as AuthError;
     }
 
     if (user.requires2FA) {
       twoFACode = generate2FACode();
       codeExpiration = new Date(Date.now() + 1 * 60 * 1000);
-      
-      console.log('2FA Code:', twoFACode);
-      
+
+      console.log("2FA Code:", twoFACode);
+
       return {
         success: true,
         requires2FA: true,
-        message: '2FA required'
+        message: "2FA required",
       };
     }
 
@@ -57,24 +66,24 @@ export const mockAuthApi = {
   },
 
   verify2FA: async (credentials: TwoFAuth): Promise<AuthResponse> => {
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     if (isCodeExpired()) {
       throw {
-        message: 'Code expired',
-        code: 'CODE_EXPIRED'
+        message: "Code expired",
+        code: "CODE_EXPIRED",
       } as AuthError;
     }
 
     if (credentials.code !== twoFACode) {
       throw {
-        message: 'Invalid code',
-        code: 'INVALID_2FA_CODE',
-        field: 'code'
+        message: "Invalid code",
+        code: "INVALID_2FA_CODE",
+        field: "code",
       } as AuthError;
     }
 
-    twoFACode = '';
+    twoFACode = "";
     codeExpiration = null;
 
     return {
@@ -84,23 +93,23 @@ export const mockAuthApi = {
   },
 
   requestNew2FACode: async (): Promise<AuthResponse> => {
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     twoFACode = generate2FACode();
     codeExpiration = new Date(Date.now() + 1 * 60 * 1000);
 
-    console.log('New 2FA Code:', twoFACode);
+    console.log("New 2FA Code:", twoFACode);
 
     return {
       success: true,
-      message: 'New 2FA code sent'
+      message: "New 2FA code sent",
     };
   },
 
   get2FAStatus: (): { code: string; isExpired: boolean } => {
     return {
       code: twoFACode,
-      isExpired: isCodeExpired()
+      isExpired: isCodeExpired(),
     };
-  }
+  },
 };
